@@ -141,9 +141,28 @@ def days_to_units(num_of_days):
 user_input = input("Hey user enter a number of days\n")
 ```    
 
+`input()` always return string 
+
 #### Function with return value 
 
 `function` can return data as a result
+
+Turning a value from data type to another called `Casting`
+
+```
+to_seconds = 24 * 60 * 60
+
+def days_to_units(num_of_days):
+    return f"{num_of_days} days are {to_seconds} seconds"
+
+user_input = input("Hey user enter a number of days\n")
+
+user_input_number = int(user_input) # Make user input into a number
+
+calculated = days_to_units(user_input_number)
+
+print (calculated)
+```
 
 
 
