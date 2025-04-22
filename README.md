@@ -164,7 +164,183 @@ calculated = days_to_units(user_input_number)
 print (calculated)
 ```
 
+## Error Handling with Try-Except 
+
+The `try...except`  block in Python is used to handle errors (exceptions) gracefully so that your program doesn’t crash when something goes wrong.
+
+```
+try:
+    result = 10 / 0
+except ZeroDivisionError:
+    print("You can't divide by zero!")
+```
+
+```
+try:
+    number = int(input("Enter a number: "))
+    result = 10 / number
+except ValueError:
+    print("That's not a valid number.")
+except ZeroDivisionError:
+    print("You can't divide by zero.")
+```
+
+## While Loop 
+
+The while loop in Python is used to repeat a block of code as long as a condition is True.
+
+```
+while condition:
+# code to repeat
+```
+
+```
+count = 1
+
+while count <= 5:
+    print("Count is:", count)
+    count += 1
+```
+
+= Output 
+
+```
+Count is: 1
+Count is: 2
+Count is: 3
+Count is: 4
+Count is: 5
+```
+
+## List and For loops 
+
+A list is a collection of items, ordered and changeable. You create one using square brackets `[]`.
+
+A for loop lets you go through each item in a list:
+
+```
+fruits = ["apple", "banana", "cherry"]
+
+for fruit in fruits:
+    print(fruit)
+
+```
+
+= Output 
+
+```
+apple
+banana
+cherry
+```
+
+## Sets 
+
+A set is an unordered, unindexed collection of unique elements.
+
+Set is a list of elements with unique values inside 
+
+Does Not allow duplicate values 
+
+```
+my_set = {1, 2, 3, 4}
+print(my_set)  # Output: {1, 2, 3, 4}
+```
+
+To convert List into a set: `set()`
+
+```
+fruits = ["apple", "banana", "cherry"]
+
+set(fruits)
+```
+
+<img width="499" alt="Screenshot 2025-04-22 at 10 18 52" src="https://github.com/user-attachments/assets/fc2325a6-2954-4fa2-bf0f-4a41d61ec0c7" />
+
+## Dictionary Data Type 
+
+More complex data structure that groups multiple
+simple data types together
+
+Stores data values in key:value pairs
+
+Duplicates are not allowed
+
+```
+person = {
+    "name": "Trinh",
+    "age": 26,
+    "country": "USA"
+}
+```
+
+```
+person = {"name": "Trinh", "age": 26, "job": "DevOps"}
+
+# Keys only
+for key in person:
+    print(key)
+
+# Keys + values
+for key, value in person.items():
+    print(key, "→", value)
+```
+    
+## Modules
+
+Logically organize Python code 
+
+Module should contain related code 
+
+If I have multiple Python file in the Project .To connect them together by using concept called `Modules`
+
+`Modules` is a Python file that contains functions or variables that I can use in another Python file . 
+
+ Any Python file that I have in my Project both of these are `modules` and I can reference one module from another . The idea is I can structure my Application using `modules`
+
+## Packages, PyPI and pip 
+
+#### Build-in and Third Party 
+
+When I install Python it comes with a set of `modules` that are `built-in` into Python 
+
+However there are many more `modules` for other diffent use cases like Web dev, ML .... I need to install as I needed 
+
+Python Modules live in module Repositoy called `pypi` 
+
+#### Module vs Package 
+
+Module is a Python file that has a name of that file . Module is 1 Python file that contain all these function and variable that I can use 
+
+Package is a collection of module . Contain multiple 
+Python file . Package alway has `__init__.py` file, and this file differentiates a normal folder with bunch of Python files from an actual package with Python files 
+
+#### Pip 
+
+To install package locally so that I can use it in my Project . In Python I install packages using a Package Manager tool called `pip`
+
+`pip` is a package manager for Python . Every programming languge has its own Package Manager tool
+
+One of the main task of `pip` is to install external packages or libraries or also called dependencies for my Project  
 
 
-    
-    
+In Python version 3 when I intall Python, Python installed `pip` come with it 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
