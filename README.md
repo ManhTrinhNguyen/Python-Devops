@@ -378,7 +378,50 @@ Second Task is to calculate total inventory value per supplier meaning in my lis
 Third task is to print out all the products that have inventory less than 10 . 
 
 Fourth task is to add some value inside the spreadsheet
+
+## OOP
+
+For example : An Application with lots of users like LinkedIn . We have user and each user has information (email, name, password, current_job_title). User can change their anything on their profile in order to do that I have to create function 
+
+In the program we need some way to define kind of the blueprint for a user, for all the Data and Function. 
+
+I want to create a blueprint once and I can use the blueprint for all of those Data and function 
+
+Blueprint for a User call `Class` and specific implementation of that blueprint is called `Object`   
+
+<img width="600" alt="Screenshot 2025-04-22 at 14 21 47" src="https://github.com/user-attachments/assets/5aba6ab5-6897-4395-be3e-7a91e42c69de" />
+
+ I will create a `Class` blueprint for a User and the User class blueprint will define what information a User has and what action user can perform in the Application  and object will contain a User 
+
+ The pieces of data also called attributes for that Class
+
+Class is blueprint for specific objects and blueprint cannot actually have specific values . 
+
+In the Blueprint we don't have any specific value we just have Attribute . Acutal value of those Attribute will be then set when we create an Object from the blueprint . However I need a function that will actually take those specific values and assign them to an object which is created from the blueprint and I will create  from the blue print that function called `def __init__(self)`
+
+`__init__(self)` called a constructor. I have a blueprint and we are construncting object from that blueprint, the constructor function will help us construct objects from the Class 
+
+`self` is refer to the Class it's in . Help us access and reference all the attribute and functions within that class  
+
+`def __init__(self, email, name, password, current_job_title):` Those value must be provide to the Constructur whenever I creating a new object 
+
+Then now I have to create function in the Class that any User in application can do, any user can change the password or change their job title and logically when change password happen by user, user provides a new password in order to override the old one . 
+
+So the flow will be -> Object will be created for that specific user so the initial data for that Object will be provided so we will have the user, email, name, password and current job title 
  
+After I have Class I can create a User Object 
+
+Now I create `post.py` Class whenever someone post somthing each post will have their own attribute like actual message .... changing, comment, ....
+
+Then I can have `main.py` that I can use those Class file 
+
+In Python almost everythin is an Object
+
+ - For example: Data type like string, Interget, float, list, set, dictionary. And this `int("10")` or str("50") were actually the constructor we called to create string or integer
+
+ - And the constructor of `int` took a string representation of a number and in its init function and constucted an integer out of it
+
+<img width="600" alt="Screenshot 2025-04-22 at 15 02 49" src="https://github.com/user-attachments/assets/905ed8ff-ad15-4365-bb40-756db0d7e15f" />
 
 
 
