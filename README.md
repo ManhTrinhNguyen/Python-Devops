@@ -326,10 +326,27 @@ One of the main task of `pip` is to install external packages or libraries or al
 
 In Python version 3 when I intall Python, Python installed `pip` come with it 
 
+## Automation with Python (Spreadsheet)
 
+#### Introduction 
 
+I will write an Application that will write a Spreadsheet file from my local file system
 
+This could be a useful use case if I am working with lots of files and I want to do some data processing in those files and I don't want to do that manually by automating or writing a program in Python that basically can do anything in a file or accress multuple files 
 
+#### Exercise 
+
+I will read the information from this file and I wll do something with that information 
+
+First ! I will write logic that calulates how many products I have Per Supplier . I will list the company, so all 3 companies with their respective number of products  
+
+Then I will write another logic that lists inventory products that have inventory which is less than 10
+
+Third exercise is going to be to list each company with their respective total inventory value 
+
+Last Exercise I will calculate inventory for each product so product count times price, and I will write that value  to additional column in the spreadsheet and after I will save that updated spreadsheet file programmatically using Python 
+
+#### Install Package 
 
 
 
