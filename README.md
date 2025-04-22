@@ -348,12 +348,37 @@ Last Exercise I will calculate inventory for each product so product count times
 
 #### Install Package 
 
+Now I want to read `inventory.xlsx` file so basically let our Python program read the contents of that file bcs I want to write a logic base on the values that are in this inventory file, I want to calculate stuff 
+
+There is a built-in `module` in Python that allows me to work with files generally not specific for spreadsheet 
+
+<img width="826" alt="Screenshot 2025-04-22 at 11 59 53" src="https://github.com/user-attachments/assets/11d27902-e500-4dca-8dda-97fe5aa4a762" />
 
 
+Also there is a external package that allow me to work with spreadsheets specificly . Much more function and much easier to use . That Package call `openpyxl`
 
+To install `openpyxl` : `pip install openpyxl` 
 
+!!! NOTE : Wondering why there are some packages with basically a dot inside and some without, these are the packages that we install Python packages, these are the packages that we install, Python Packages and we know that bcs that `__init__.py` file inside and the one without dot, they are just folders with bunch of files inside but they are not Python packages . 
 
+ - And some of those packages I see other packages as well with their own `__init__.py` file so basically hierarchy of multiple packages . and at this point I will say that the word `library` describes package that includes multiple other packages which has a hierarchy of packages
 
+ - So we have `module` which is one python file -> Then I have package which is hierachy of multiple `modules` with `__init__.py` file inside -> Then I have Library which is multiple packages together in a hierachy
+
+#### Implementation 
+
+`openpyxl.load_workbook()` is a function in order to read my spreadsheet file . 
+
+ - This function will load a workbook and all is contents and later I want to do something with that content
+
+First task is to calculate how many products I have per supplier and then list the names of the supplier with that respective number of products 
+
+Second Task is to calculate total inventory value per supplier meaning in my lists for each product I have number of units for the product and the price so basically for each supplier 
+
+Third task is to print out all the products that have inventory less than 10 . 
+
+Fourth task is to add some value inside the spreadsheet
+ 
 
 
 
