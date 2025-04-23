@@ -423,6 +423,32 @@ In Python almost everythin is an Object
 
 <img width="600" alt="Screenshot 2025-04-22 at 15 02 49" src="https://github.com/user-attachments/assets/905ed8ff-ad15-4365-bb40-756db0d7e15f" />
 
+## Project: API Request to GitLab 
+
+To use Python to talk to external Application . 
+
+!!! NOTE : Communication between 2 Applications, in this case Python Application and Gitlab Application usually happens using a HTTP Protocol .
+
+Python Application will send an HTTP request to Gitlab application and from the Gitlab Application it will get an HTTP response for that request 
+
+HTTP is a protocol that these 2 Applications can communicate with over the Internet 
+
+The concept of 1 Application talking to another is baciscally done using API request . 
+
+Remote Application (GitLab) has an API, these are functions that GitLab make available for other applications to call and we will call those functions from out Python application in order to get the List of projects for my user and that communication or Python asking for this information is going to be an API request and what we get in response from this GitLab API is going to be API response 
+
+#### Implementation 
+
+In Python in order to make external request to remote applications we will need a module called `requests`
+
+`requests` package now has functions, variables and objects that we can use to talk to these remote Application like GitLab  
+
+I can also make request to change something 
+
+To make a request : `requests.get("<API-URL>")`
+
+JSON is a standard format that all programming languages understand and usally when 2 applications communicate with each other which are written in different languages and with different technologies with JSON they have common format for communication and this request module basically gives us this JSON function to read the JSON format that GitLab sent us . So JSON function will read the JSON response from GitLab and turn it into one of the Python Data Types   
+
 
 
 
