@@ -461,5 +461,49 @@ Python has a library called `Boto` that makes it possible to work with AWS `reso
 
 !!! NOTE : Even though Terraform and python can both do some of the same things of of IaC provisioning it is importnant to know which tool to use for which specific tasks, and . 
 
+#### Instal Boto and connect to AWS 
+
+To install Boto3: `pip install boto3`
+
+Just like we did with Terraform I want to connect to AWS account and authenticate with our AWS User .
+
+We can configure using AWS configure command if I have aws CLI installed locally, which sets four values (aws_access_id, aws_access_secret_key, region, output format)
+
+`Boto3` will automatically take these credentiasl and the default region information to connect to AWS and authenticate with it . That mean I do not need to do anything 
+
+My AWS credentials live here : `ls ~/.aws`
+
+#### Try out Boto3 
+
+I will create AWS client from Boto Library, I will list all the VPCs available in the region that is configured in the default region configured for AWS 
+
+!!! Important : `Boto3` library can do pretty much anything in AWS account, much more than Terraform could do . So whenever I am writing logic to do something in AWS, create resources, configure resoruces, maybe automate some maintainance task, I would need to use the documentation as a reference, bcs there is no way that I can remember all the function names and all the parameters that I need to use . 
+
+ - Also the purpose of this part is teach me how to work with documentation to be able thendo anything that I can acutally want to do for my own project
+
+All the Services have their own functions, own set of functions that I can work with 
+
+Basically in `Boto3` I have a `Client` for EC2 that will be able to connect to AWS and do something for EC2 related components . And that is why we gonna create a Client from EC2 : `client = boto3.client('ec2')`
+
+ I will get into `describe_vpcs`, then I will jump to the description of that function . 
+
+ - First I need to know a function name . To call function `client.describe_vpcs()`
+
+ - What Parameter does it take. What do I need to pass in to get a result . I will have the list of Parameter and the describtion of what the Parameter actually are as well as which data types I should use for those parameters
+
+ - Also for each parameters I see whether that parameter is required or not . So basically whether I alway have to set them when I call this function or I can leave that out .
+ 
+ - Also we need to know what are we getting as a result of  the function call in `Response Syntax` . The reason why we need to know how the response looks like is so that we can actually get the specific values from that response, the values that we are interested in
+
+ - It's important to get used to and comfortable with reading values from the nested response object
+
+We must write program so it works whether we have 1 elements 
+
+
+
+
+
+
+
 
 
