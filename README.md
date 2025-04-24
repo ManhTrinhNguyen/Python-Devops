@@ -1,4 +1,4 @@
-[Automation with Python (Spreadsheet)](#Automation-with-Python-(Spreadsheet))
+[Automation with Python (Spreadsheet)](#Automation-with-Python)
 
 # Python-Devops
 
@@ -326,7 +326,7 @@ One of the main task of `pip` is to install external packages or libraries or al
 
 In Python version 3 when I intall Python, Python installed `pip` come with it 
 
-## Automation with Python (Spreadsheet)
+## Automation with Python
 
 #### Introduction 
 
