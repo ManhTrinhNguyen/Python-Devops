@@ -677,7 +677,13 @@ for status in statues['InstanceStatuses']:
 
 ## Scheduling the Status Checks 
 
- 
+Obviously Status will changes . Just executing the program once doesn't make sense . If we are monitoring and basically want to have an overview of live updates of instance statuses, we can't just be sitting there and executing this program manually
+
+So I want some kind of sheduler, some automate process, that runs trigger the program basically every hour or every 10 mins or maybe every single day at 1am  
+
+So I will write a scheduler, that will execute this specific logic every 5 mins 
+
+ - First Add Schelue Library called `schedule` : ``
 
 
 
