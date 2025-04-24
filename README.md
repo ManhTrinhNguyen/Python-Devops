@@ -2,7 +2,7 @@
 
 - [OOP](#OOP)
 
-- [Project: API Request to GitLab ](Project-:-API-Request-to-GitLab)
+- [Project: API Request to GitLab ](Project:-API-Request-to-GitLab)
 
 - [Boto Library (AWS SDK for Python)](Boto-Library-AWS-SDK-for-Python)
 
