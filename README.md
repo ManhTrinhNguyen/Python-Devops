@@ -503,7 +503,96 @@ Basically in `Boto3` I have a `Client` for EC2 that will be able to connect to A
 
  - It's important to get used to and comfortable with reading values from the nested response object
 
-We must write program so it works whether we have 1 elements 
+We must write program so it works whether we have 1 elements or 100 or even no element at all in the list 
+
+```
+import boto3
+
+ec2_client = boto3.client('ec2')
+
+all_available_vpc = ec2_client.describe_vpcs()
+
+vpcs = all_available_vpc["Vpcs"] # Get Vpcs array
+
+# I will loop through the Vpcs array to get a single vpc . The
+for vpc in vpcs:
+  # Get vpc_id 
+  print(vpc["VpcId"])
+
+  # Get CidrBlockAssociationSet array 
+  cidr_block_assoc_sets = vpc["CidrBlockAssociationSet"]
+
+  # Loop through cidr_block_assoc_sets
+  for assoc_set in cidr_block_assoc_sets:
+    print(assoc_set["CidrBlock"])
+```
+
+#### Connect to non-default region 
+
+What if I want to get infomation from another Region, but I don't want to change the default Region in `~/aws/config`
+
+So in `ec2_client = boto3.client('ec2')` I can pass in the region name `ec2_client = boto3.client('ec2'), region_name="eu-west-3"` . This way I can override the default region .
+
+Instead of directly put value in parameter I pass value via key=value like this `region_name="eu-west-3` this is called name parameter
+
+When I have a function that accepts 10 optionals parameters, But I only want to provide 2 of the parameter values, most of them are optionals . In that case Python need to know for which parameters I am providing these values, So we have to tell that explicitly by using named parameter  . With name parameters I can tell exactly which value I am setting for which parameters
+
+#### Create VPC and Subnet 
+
+In docs -> Go to EC2 -> Go to Service Resources 
+
+What is the difference between `resource` and `client` ? 
+
+ - `Client` is more low-level API, It mean I need to explicitly specify exactly which resource I want to connect to for every single function that I execute
+
+ - `Resources` is basically like a wrapper around client that makes a little bit high level, a little bit more easier to work with different resources
+
+This will return `VPC resource` . Give a resource Object back so we can use it for subsequent call 
+
+```
+vpc = ec2_resource.create_vpc(
+  CidrBlock = "10.0.0.0/16"
+)
+
+# Now I have vpc Object I can create a subnet on that vpc Object
+
+vpc.create_subnet()
+```
+
+If we were using `Client` instead, I would have to specify the VPC ID and the subnet 
+
+```
+new_vpc = ec2_resource.create_vpc(
+  CidrBlock = "10.0.0.0/16"
+) 
+  
+new_vpc.create_subnet(
+  CidrBlock = "10.0.1.0/24"
+)
+
+new_vpc.create_subnet(
+  CidrBlock = "10.0.2.0/24"
+)
+
+new_vpc.create_tags(
+  Tags = [
+    {
+      'Key': 'Name',
+      'Value': 'my-vpc'
+    }
+  ]
+)
+```
+
+
+
+
+
+
+
+
+
+
 
 
 
