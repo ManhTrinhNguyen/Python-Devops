@@ -6,6 +6,12 @@
 
 - [Boto Library (AWS SDK for Python)](#Boto-Library-AWS-SDK-for-Python)
 
+- [Terraform vs Python When to use which tool](#Terraform-vs-Python-When-to-use-which-tool)
+
+- [Health Check EC2 Status Check](#Health-Check-EC2-Status-Check)
+
+- [Scheduling the Status Checks](#Scheduling-the-Status-Checks)
+
 # Python-Devops
 
 ## Automation 
@@ -584,16 +590,94 @@ new_vpc.create_tags(
 )
 ```
 
+## Terraform vs Python When to use which tool
 
+Terraform is much better tools for Create, Delete and Manage IaC . More High level and easier to write 
 
+#### Use Case for Boto3 
 
+I can do thing that I wouldn't be able to do with Terraform 
 
+I can do more complex logic like conditionals and decide when to do what compared to Terraform 
 
+Boto is a full-fledged AWS library so it allow me to do much more and get more information also about the `resources` from AWS compared to Terraform AWS provider 
 
+For example I can do Monitoring IaC, doing backups, doing cleanups, doing tasks that are scheduled basically that run every pre-configured time, which all these thing I can acutally can't really do in Terraform . 
 
+I can add Web Interface to my Python project and execute all these backup and cleanup task manually, maybe just add some buttons, or do a cleanup or maybe display the health 
 
+## Health Check EC2 Status Check
 
+Let's say we have 100 Servers on AWS using Terraform and have some Auto Scaling Configured . All the time new Instances get created, some get deleted, etc. And Since EC2 Instances always need some tome to fully initialize I acutally want to know which instances are in which State, So that I have a good overview of which Instances are running which ones are in ready State, or which one are currently initialzing, etc 
 
+So bassically I want to get Status check from EC2 Instances using Python's Boto library 
+
+#### Preparation : Create EC2 Instances with TF .
+
+I will use the Terraform Project in Teraform Module to create 3 EC2 Instances in `Create-3-EC2-Instance-for-Health-Check-Python` branch (https://github.com/ManhTrinhNguyen/Infrastructure-as-code-Terraform)
+
+To get 3 Instances instead of one I just need to copy `resource aws_instance` 3 times and change the name
+
+Now I have 3 Instances in my AWS . I can use Python `Boto3` to list or fetch the data on all EC2 Instances running in this region . 
+
+To get all the EC2 instances from Specific region in the VPC they are running :
+
+```
+import boto3
+
+ec2_client = boto3.client('ec2')
+
+ec2_resource = boto3.resource('ec2')
+
+# To get all the Reservations
+
+reservations = ec2_client.describe_instances()
+
+# Loop through the Reservations to get Reservation
+for reservation in reservations["Reservations"]:
+# Get Instances
+instances = reservation['Instances']
+
+# Loop through the instances to get instance
+for instance in instances:
+    # Get Instance ID 
+    instance_id = (instance["InstanceId"])
+    
+    # Get Instance Name 
+    instance_name = (instance["State"]["Name"])
+    
+    print(f"Status of Instance {instance_id} is              {instance_name}")
+```
+
+ - `Reservations` basically represents starting or launching multiple instances . One `reservation` is an act or intention of launching or starting Instances, so we might have multiple `reservations` and then each reservation can have multiple Instances .
+
+#### Print EC2 Status Check 
+
+I need to check 2 things in Instances .
+
+ - It take some time to initialzie
+
+ - When it ready to use
+
+To check EC2 Status I call function `describe_instance_status`
+
+```
+import boto3
+
+ec2_client = boto3.client('ec2')
+
+statues = ec2_client.describe_instance_status()
+
+for status in statues['InstanceStatuses']:
+  instance_status = (status["InstanceStatus"]["Status"])
+  system_status = (status["SystemStatus"]["Status"])
+  instance_id = status["InstanceId"]
+  print(f"Instance {instance_id} status is {instance_status}, system status is {system_status}")
+```
+
+## Scheduling the Status Checks 
+
+ 
 
 
 
