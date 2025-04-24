@@ -1,4 +1,10 @@
-[Automation with Python (Spreadsheet)](#Automation-with-Python)
+- [Automation with Python (Spreadsheet)](#Automation-with-Python)
+
+- [OOP](#OOP)
+
+- [Project: API Request to GitLab ](Project-:-API-Request-to-GitLab)
+
+- [Boto Library (AWS SDK for Python)](Boto-Library-AWS-SDK-for-Python)
 
 # Python-Devops
 
@@ -449,7 +455,7 @@ To make a request : `requests.get("<API-URL>")`
 
 JSON is a standard format that all programming languages understand and usally when 2 applications communicate with each other which are written in different languages and with different technologies with JSON they have common format for communication and this request module basically gives us this JSON function to read the JSON format that GitLab sent us . So JSON function will read the JSON response from GitLab and turn it into one of the Python Data Types   
 
-## Boto Library (AWS SDK for Python)
+## Boto Library AWS SDK for Python
 
 AWS pretty complex It has tons of Services and Components, and they are projects that run 100 or 1000 of servers and create 100 or 1000 of resousrces on AWS . As we saw in Terraform module, it's much more efficient to automate the process of creating servers and configuring them, than doing all work manually . So I created Terraform projects that automate creating EC2 instance with all the needed resources like SG, key pair, as well as automated EKS . As well as automated EKS Cluster creation and configuration . 
 
