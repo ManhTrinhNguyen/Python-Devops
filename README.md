@@ -2,7 +2,7 @@
 
 - [OOP](#OOP)
 
-- [Project: API Request to GitLab ](#Project-:-API-Request-to-GitLab)
+- [Project: API Request to GitLab ](#Project-API-Request-to-GitLab)
 
 - [Boto Library (AWS SDK for Python)](#Boto-Library-AWS-SDK-for-Python)
 
@@ -429,7 +429,7 @@ In Python almost everythin is an Object
 
 <img width="600" alt="Screenshot 2025-04-22 at 15 02 49" src="https://github.com/user-attachments/assets/905ed8ff-ad15-4365-bb40-756db0d7e15f" />
 
-## Project: API Request to GitLab 
+## Project API Request to GitLab 
 
 To use Python to talk to external Application . 
 
