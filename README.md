@@ -12,6 +12,8 @@
 
 - [Scheduling the Status Checks](#Scheduling-the-Status-Checks)
 
+- [Configure Server Add Environment Tags to EC2](#Configure-Server-Add-Environment-Tags-to-EC2)
+
 # Python-Devops
 
 ## Automation 
@@ -712,8 +714,53 @@ while True:
   schedule.run_pending()
 ```
 
+## Configure Server Add Environment Tags to EC2 
 
+Let's say we have 20 Servers in us-west region which are used as production servers but we also have 10 servers in us-north region . Basically we created all these Servers using Terraform in both of these Regions and now we want to add tags to all these servers, we want to add environment dev and environment prod servers to respective instances 
 
+With Python logic I will basically get the instances for each region and add the correct tag to all the Servers in that region 
+
+Collect all the ID then execute 1 Function create tags with all the Instances ID Instead of executing the create tags function multiple times  
+
+Making 1 request to 100 servers much more efficent than making 100 requests to 100 servers 
+
+When we write a program in addition to program just working as expected obviously it should also work effciently 
+
+```
+import boto3
+
+# Get EC2 Client from us-west-1
+ec2_client_us_west_1 = boto3.client('ec2', region_name="us-west-1")
+
+# Get EC2 Resource from us-west-1
+ec2_resource_us_west_1 = boto3.resource('ec2', region_name="us-west-1")
+
+reservations_us_west_1 = ec2_client_us_west_1.describe_instances()["Reservations"]
+
+# Create Instance_ID list 
+instance_ids_us_west_1 = []
+
+# Iterate through the Reservations 
+for reservation in reservations_us_west_1:
+  instances = reservation['Instances']
+  for instance in instances:
+    # Get ID of Instance
+    instance_id = instance["InstanceId"]
+    instance_ids_us_west_1.append(instance_id)
+    
+
+response = ec2_resource_us_west_1.create_tags(
+    Resources=instance_ids_us_west_1,
+    Tags=[
+        {
+            'Key': 'environment',
+            'Value': 'prod'
+        },
+    ]
+)
+```
+
+For another region I just need to do the same logic as the logic above with different region name
 
 
 
