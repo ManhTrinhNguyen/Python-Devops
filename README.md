@@ -784,6 +784,111 @@ This is something that I want to run multiple time . Bcs the Status basically ma
 
 ## Automate backup for EC2 Instances 
 
+I will create Python program that automates backups for EC2 Instances . 
+
+I will create snapshots of volumes for our EC2 Instances 
+
+Volumes are AWS Storage components that basically stores the data of the EC2 instance and every EC2 Instance has its own volume where it writes all of its data 
+
+Think of Volume as a hard drive for my EC2 Server . Every Server needs a hard drive to save the data . So when we create EC2 instance a volume get created automatically and get attached to that EC2 Instance and when we delete EC2 Instances volume get deleted as well 
+
+Volume Snapshot is a copy of a volume what inside the volume or that hard drive basically, exactly at that time when we create a snapshot  
+
+And snapshot are very important for data backups and for creating new volumes 
+
+I want to automate this Snapshot if I have 100 of Instances to ensure that I always have latest backup data available incase EC2 Instance dies or volumes get deleted or maybe data gets corrupted in that volume 
+
+Let's say I have 50 EC2 Volumes that have not been backed up, but recently some of the EC2 Instances crashed and we lost the volumes and data so I will create backup for it  
+
+I will create Python program that will create snapshots automatically every day at a specificed time 
+
+I will write a schedule task that go through the volumes everydays and then creates snapshots or backups, volume backups from those volumes 
+
+To get a list a volume I will go to EC2 Client -> `volumes = ec2_client.describe_volumes()['Volumes']` . In order to create Snapshot we need volume ID . 
+
+```
+for volume in volumes:
+  print(volume['VolumeId'])
+```
+
+To create Snapshot :
+
+```
+for volume in volumes:
+  volume_id = (volume['VolumeId'])
+
+  new_snapshot = ec2_client.create_snapshot(
+    VolumeId=volume_id
+  )
+
+  print(new_snapshot)
+```
+
+I will have a task that regularly executes and does a backup every single day or maybe every one hour depending on how sensitive my data is, how risky it is or how dangerouse it would be to basically lose the data . So a need a Scheduler 
+
+```
+import boto3
+import schedule
+
+ec2_client = boto3.client('ec2', region_name="us-west-1")
+
+volumes = ec2_client.describe_volumes()['Volumes']
+
+def volume_backup():
+
+  for volume in volumes:
+    volume_id = (volume['VolumeId'])
+
+    new_snapshot = ec2_client.create_snapshot(
+      VolumeId=volume_id
+    )
+
+    print(new_snapshot)
+
+
+# Scheduler everydays at 1pm
+schedule.every().day.at("13:00").do(volume_backup)
+
+# To run the Scheduler I have to execute that 
+while True:
+  schedule.run_pending()
+```
+
+What If I want to only create a snapshot for only Production server ? 
+
+In `describe_volume` I can possible filter the result .
+
+I can assign my volumes specific tags and then I can filter the volumes using that tag . 
+
+If I have maybe 100 servers I would not do that manually . 
+In this case I would either get all the Instances using their tags and then basically set instance ID and filter volumes for those instance IDs . 
+
+Or I would just write a Python program that adds tags to all the volumes that are attached to production servers 
+
+I will get Volume with a `tag: prod` like this then I will create snapshot from it 
+
+```
+volumes = ec2_client.describe_volumes(
+  Filters=[
+    {
+      'Name': 'tag:environment',
+      'Values': [
+        'production'
+      ]
+    }
+  ]
+)['Volumes']
+```
+
+
+
+
+
+
+
+
+
+
 
 
 
