@@ -18,6 +18,8 @@
 
 - [Automate backup for EC2 Instances](#Automate-backup-for-EC2-Instances)
 
+    - [Automate cleanup of old Snapshot multiple Volumes](#Automate-cleanup-of-old-Snapshot-multiple-Volumes)
+
 # Python-Devops
 
 ## Automation 
@@ -880,9 +882,242 @@ volumes = ec2_client.describe_volumes(
 )['Volumes']
 ```
 
+## Automate cleanup of old Snapshot 
+
+In addition to creating these automated backup snapshots, I want to write a program that will clean up old snapshots from AWS account, since I am not need those old snapshots . I can scheduler to cleanup, maybe we want to clean up the old snapshots every week 
+
+In order to cleanup the Snapshots, I basially have to get all the Snapshots from our AWS account . So basically I want to be able to list all the snapshot that I have created in our region in AWS account . And once we have the list of all those snapshots in our Python program, we want to go through them and check the creation date and I want to find the latest 2 and delete the rest 
+
+To get a list of all snapshot : `describe_snapshots()` . This snapshot function are atucally return snapshot that AWS also does automatically . These are Snapshot that created for EC2 Instance volumes but there are another snapshots that AWS also creates in the background 
+
+If I pass in `ownerIds:self` it basically means I want snapshots created by me, my own snapshots 
+
+To get time that Snapshot creation actually start : 
+
+```
+import boto3 
+
+ec2_client = boto3.client('ec2', region_name = "us-west-1")
+
+snapshots = ec2_client.describe_snapshots(
+  OwnerIds=['self']
+)['Snapshots']
 
 
+for snapshot in snapshots:
+  print(snapshot['StartTime'])
+```
 
+I want to sort a snapshot by a creation day . Just take the top 2 just created and delete the rest (older one)
+
+To sort a list by a value of a dictionary, I will use `sorted()` built-in function that Python gives me and that take `list` and `key=` of dictionary as a parameters . I want to sort these Snapshot using ` snapshot['StartTime']`
+
+To delete Snapshot : `ec2_client.delete_snapshot(SnapshotId=snapshot['SnapshotId')`
+
+Review : I create a EC2 client where I have my Snapshot, then I am fetching all the Snapshot that I have created, there for the owner self, then I got the unsorted list of snapshots and I sort them by using `Startime` key in each snapshot, and we sort them in the descending order, so I have the most recent snapshots on the top  and then I decide t leave the most recent two in that list of snapshot and delete the rest
+
+```
+import boto3 
+from operator import itemgetter
+import schedule
+
+ec2_client = boto3.client('ec2', region_name = "us-west-1")
+
+snapshots = ec2_client.describe_snapshots(
+  OwnerIds=['self']
+)['Snapshots']
+
+
+sort_by_date = sorted(snapshots, key=itemgetter('StartTime'), reverse=True)
+
+# Instead of iterate to the whole list I want to skip the first 2 elements 
+def cleanup_snapshot():
+  for snapshot in sort_by_date[2:]:
+    print(snapshot['StartTime'])
+    print(snapshot['SnapshotId'])
+    # Delete Snapshot 
+
+    response = ec2_client.delete_snapshot(
+      SnapshotId=snapshot['SnapshotId']
+    )
+
+    print(response)
+
+
+# Scheduler everydays at 1pm
+schedule.every().day.at("13:00").do(cleanup_snapshot)
+
+# To run the Scheduler I have to execute that 
+while True:
+  schedule.run_pending()
+```
+
+#### Automate cleanup of old Snapshot multiple Volumes
+
+If I have multiple volumes and creating snapshots for many different volumes then I can't just list all the Snapshot and then remove everything other than the most recent two . Bcs I have to actually differentiate which Snapshot belong to the same Volume so we have to do that logic, basically, for a Snapshots of each and every volume 
+
+In the `describe_snapshots()` I will add additional parameter called `volumeId` so I will listing this Snapshot of one specific volume at a time, and then that will give me a list of snapshots per volume, then I can do sorting and removing everything 
+
+To get volume ID I have to list all the volumes that I have, the one that I have created Snapshot on, so in order to do that, I am going to the Volume backup program that I created and this is basically the logic that created those snapshots from volumes that have name `tags` with value `prod`
+
+```
+import boto3 
+from operator import itemgetter
+import schedule
+
+ec2_client = boto3.client('ec2', region_name = "us-west-1")
+
+volumes = ec2_client.describe_volumes(
+  Filters=[
+    {
+      'Name': 'tag:environment',
+      'Key' : ['dev']
+    }
+  ]
+)['Volumes']
+
+for volume in volumes:
+  volume_id = (volume['VolumeId'])
+
+  snapshots = ec2_client.describe_snapshots(
+  OwnerIds=['self'],
+  Filters=[
+    {
+      'Name': 'volume-id',
+      'Values': [volume_id]
+    }
+  ]
+  )['Snapshots']
+
+  sort_by_date = sorted(snapshots, key=itemgetter('StartTime'), reverse=True)
+
+  for snapshot in sort_by_date[2:]:
+    print(snapshot['StartTime'])
+    print(snapshot['SnapshotId'])
+    # Delete Snapshot 
+
+    response = ec2_client.delete_snapshot(
+      SnapshotId=snapshot['SnapshotId']
+    )
+
+    print(response)
+```
+
+# AWS EC2 Snapshot Cleanup
+
+To sort a list by a value of a dictionary, I will use the `sorted()` built-in function that Python gives me.  
+It takes a `list` and a `key=` parameter to tell how I want to sort.  
+In this case, I want to sort these snapshots using `snapshot['StartTime']`.
+
+To delete a Snapshot in AWS, I use:
+
+```
+ec2_client.delete_snapshot(SnapshotId=snapshot['SnapshotId'])
+```
+
+---
+
+I create an EC2 client where I have my Snapshots:
+
+```
+ec2_client = boto3.client('ec2', region_name="us-west-1")
+```
+
+Then I fetch all the Snapshots that I have created, by specifying `OwnerIds=['self']`:
+
+```
+snapshots = ec2_client.describe_snapshots(
+  OwnerIds=['self']
+)['Snapshots']
+```
+
+At this point, I have an unsorted list of snapshots.
+
+I want to sort them by `StartTime`, so the most recent snapshots appear first.  
+I use `sorted()` function together with `itemgetter('StartTime')`:
+
+```
+from operator import itemgetter
+
+sort_by_date = sorted(snapshots, key=itemgetter('StartTime'), reverse=True)
+```
+
+Now I have the list sorted in **descending order**.
+
+---
+
+Instead of iterating through the whole list, I want to **skip the first 2 elements** (the most recent snapshots) and delete the rest:
+
+```
+def cleanup_snapshot():
+  for snapshot in sort_by_date[2:]:  # Skip the latest 2
+    print(snapshot['StartTime'])
+    print(snapshot['SnapshotId'])
+
+    # Delete snapshot
+    response = ec2_client.delete_snapshot(
+      SnapshotId=snapshot['SnapshotId']
+    )
+
+    print(response)
+```
+
+---
+
+I use the `schedule` library to schedule the `cleanup_snapshot()` function to run **every day at 1PM**:
+
+```
+import schedule
+
+schedule.every().day.at("13:00").do(cleanup_snapshot)
+```
+
+To actually make the scheduler run, I have to use an infinite loop:
+
+```
+while True:
+  schedule.run_pending()
+```
+
+---
+
+# Full Code
+
+```
+import boto3 
+from operator import itemgetter
+import schedule
+
+# Create EC2 client
+ec2_client = boto3.client('ec2', region_name="us-west-1")
+
+# Fetch snapshots owned by self
+snapshots = ec2_client.describe_snapshots(
+  OwnerIds=['self']
+)['Snapshots']
+
+# Sort snapshots by StartTime descending
+sort_by_date = sorted(snapshots, key=itemgetter('StartTime'), reverse=True)
+
+# Cleanup function
+def cleanup_snapshot():
+  for snapshot in sort_by_date[2:]:  # Skip first 2 snapshots
+    print(snapshot['StartTime'])
+    print(snapshot['SnapshotId'])
+
+    response = ec2_client.delete_snapshot(
+      SnapshotId=snapshot['SnapshotId']
+    )
+
+    print(response)
+
+# Schedule the cleanup everyday at 1 PM
+schedule.every().day.at("13:00").do(cleanup_snapshot)
+
+# Keep the scheduler running
+while True:
+  schedule.run_pending()
+```
 
 
 
