@@ -14,6 +14,10 @@
 
 - [Configure Server Add Environment Tags to EC2](#Configure-Server-Add-Environment-Tags-to-EC2)
 
+- [Print EKS Cluster Info](#Print-EKS-Cluster-Info)
+
+- [Automate backup for EC2 Instances](#Automate-backup-for-EC2-Instances)
+
 # Python-Devops
 
 ## Automation 
@@ -762,6 +766,23 @@ response = ec2_resource_us_west_1.create_tags(
 
 For another region I just need to do the same logic as the logic above with different region name
 
+## Print EKS Cluster Info
+
+Let's say I have created 10 EKS Cluster in my AWS account, using Terraform . And  I want to have an overview of all my running clusters, I want to see which status they have, are they in active state, are they in failed or creating or whatever state they have . We want to print that out as well as we want to know for each cluster which Kubernetes version the cluster is running and also a Cluster Endpoint  
+
+What I want is to get all the clusters in that region and then go through the Cluster value itself and basically check the status of the Cluster  
+
+To get all the Clusters Name : `clusters = client.list_clusters()['clusters']` . This will be a list of Cluster name 
+
+To get detail infomation for specific Clusters : `response client.describe_cluster(name= <name-of-cluster>)` . 
+
+ - From that I can get cluster status : `cluster_status = response['cluster']['status']`
+
+ - Also I can get Cluster endpoint : `cluster_endpoint = response['cluster']['endpoint']`
+
+This is something that I want to run multiple time . Bcs the Status basically may change the endpoint and version will most probaly stay the same most of the time unless there is a new version 
+
+## Automate backup for EC2 Instances 
 
 
 
