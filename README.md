@@ -18,9 +18,13 @@
 
 - [Automate backup for EC2 Instances](#Automate-backup-for-EC2-Instances)
 
-    - [Automate cleanup of old Snapshot](#Automate-cleanup-of-old-Snapshot) 
+- [Automate cleanup of old Snapshot](#Automate-cleanup-of-old-Snapshot) 
 
-    - [Automate cleanup of old Snapshot multiple Volumes](#Automate-cleanup-of-old-Snapshot-multiple-Volumes)
+- [Automate cleanup of old Snapshot multiple Volumes](#Automate-cleanup-of-old-Snapshot-multiple-Volumes)
+
+- [Automate restoring EC2 Volume from the Backup](#Automate-restoring-EC2-Volume-from-the-Backup)
+
+- [Boto3 Documents](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html)
 
 # Python-Devops
 
@@ -1149,6 +1153,100 @@ for volume in volumes:
 - Always keep the 2 most recent snapshots for safety.
 - Be careful: deleting snapshots is **permanent** and cannot be undone.
 
+## Automate restoring EC2 Volume from the Backup 
+
+Now I have the Snapshot ? How acutally I can use that Snapshot . Let's say I have an Instance running and the volume data on  that Instance gets corrupted, I want to recover the latest working state of that EC2 Instance by creating a new volume from a snapshot, then attaching that volume to the EC2 Instance so that it can continue running 
+
+This Python script automates the process of restoring an EBS volume from the most recent snapshot associated with a specific EC2 instance. It uses the AWS SDK `boto3` to:
+
+1. Identify the volume attached to an EC2 instance.
+2. Retrieve the latest snapshot of that volume.
+3. Create a new EBS volume from the snapshot.
+4. Wait until the volume becomes available.
+5. Attach the new volume to the EC2 instance.
+
+#### Prerequisites
+
+AWS account with EC2 and EBS permissions.
+AWS credentials configured (`~/.aws/credentials` or via environment).
+`boto3` installed: `pip install boto3`
+
+```
+import boto3 
+from operator import itemgetter
+
+# Create EC2 client and resource in a specific AWS region
+ec2_client = boto3.client('ec2', region_name='us-west-1')
+ec2_resource = boto3.resource('ec2', region_name='us-west-1')
+
+# ID of the EC2 instance whose volume will be restored
+instance_id = "i-0c7270f4c6bb9b931"
+
+# Step 1: Get the volume attached to the given EC2 instance
+volumes = ec2_client.describe_volumes(
+  Filters = [
+    {
+      'Name': 'attachment.instance-id',
+      'Values': [instance_id]
+    }
+  ]
+)
+
+# Pick the first (or only) volume from the response
+instance_volume = volumes['Volumes'][0]
+
+# Step 2: Get snapshots that belong to you and are associated with the volume
+snapshots = ec2_client.describe_snapshots(
+  OwnerIds=['self'],  # Limits results to snapshots you created
+  Filters=[
+    {
+      'Name': 'volume-id',
+      'Values': [instance_volume['VolumeId']]
+    }
+  ]
+)['Snapshots']
+
+# Sort snapshots by StartTime descending (latest first) and pick the newest one
+latest_snapshot = sorted(snapshots, key=itemgetter('StartTime'), reverse=True)[0]
+
+# Step 3: Create a new EBS volume from the latest snapshot
+new_volume = ec2_client.create_volume(
+  SnapshotId=latest_snapshot['SnapshotId'],
+  AvailabilityZone="us-west-1a",  # Must match the AZ of the instance
+  TagSpecifications=[
+    {
+      'ResourceType': 'volume',
+      'Tags': [
+        {
+          'Key': 'Name',
+          'Value': 'dev'
+        }
+      ]
+    }
+  ]
+)
+
+# Step 4: Wait for the volume to become 'available' before attaching
+# This is important to avoid attachment failure due to timing
+while True:
+  volume = ec2_resource.Volume(new_volume['VolumeId'])
+  print(volume.state)  # Print status: creating, available, etc.
+  if volume.state == 'available':
+    # Attach the new volume to the EC2 instance at a specified device path
+    ec2_resource.Instance(instance_id).attach_volume(
+      VolumeId=new_volume['VolumeId'],
+      Device='/dev/xvdb'  # Must differ from existing device like /dev/xvda
+    )
+    break
+```
+
+#### NOTE
+
+Make sure the AvailabilityZone used in create_volume() matches the AZ of your EC2 instance.
+
+Avoid reusing existing device names (/dev/xvda, /dev/xvdb, etc.).
+
+Ensure IAM permissions include ec2:Describe*, ec2:CreateVolume, and ec2:AttachVolume.
 
 
 
