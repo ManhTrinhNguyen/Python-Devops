@@ -30,7 +30,9 @@
 
 - [Website Mornitoring](#Website-Mornitoring)
 
-    - [Create Server and run Nginx container](#Create-Server-and-run-Nginx-container) 
+    - [Create Server and run Nginx container](#Create-Server-and-run-Nginx-container)
+ 
+    - [Website Request](#Website-Request)
 
 # Python-Devops
 
@@ -1312,7 +1314,37 @@ SSH to a Server : `ssh root@<ip-address>`
 
 To install Docker, depend on the instruction that we are on we can follow the instruction in Docker Document 
 
-To install Docker for Debian : 
+To install Docker for Debian :(https://docs.docker.com/engine/install/debian/)
+
+```
+# Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+```
+
+To install Docker : `sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin`
+
+Start Nginx container : `docker run -d -p 8080:80 nginx`
+
+To access it in the Server : `<public-ip>:80`
+
+
+#### Website Request
+
+I will try to access the Nignx endpoint in the Browser from the Python 
+
+If I want to talk to other Application from Python I will use the library called `request`
+
 
 
 
