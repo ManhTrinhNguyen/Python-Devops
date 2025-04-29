@@ -33,6 +33,8 @@
     - [Create Server and run Nginx container](#Create-Server-and-run-Nginx-container)
  
     - [Website Request](#Website-Request)
+ 
+    - [Email Notification](#Email-Notification)
 
 # Python-Devops
 
@@ -1345,9 +1347,56 @@ I will try to access the Nignx endpoint in the Browser from the Python
 
 If I want to talk to other Application from Python I will use the library called `request`
 
+```
+import requests
+
+# Access the application 
+# This will give me an response
+
+response = requests.get('http://50-116-2-196.ip.linodeusercontent.com:8080/')
+
+print(response.status_code)
+
+# I want to check if the Application accessible and it actually giving back status code 200 
+
+if response.status_code == 200:
+  print("Application is up and running successfully")
+else: 
+  print("Application downs. Fix it")
+```
+
+#### Email Notification 
+
+Whenever the Status code is not 200 it mean the Application has some problem . It is giving a error message back or error Response 
+
+In that case I need to be notify by our Python program that our application has problem, user cannot access it, so we need to do something about it 
+
+To send email in Python, we have built-in module module for sending email and that is called `smtplib`. 
+
+What I needs to send an email is a `sender` and `receiver` . Python program is basically need to be able to send email from certain email account
+
+ - Example if we have certain Gmail account then Python need to access to the Gmail account and send an email on our behalf to some email address
+
+ - I have Gmail account, I can allow Python to send email on my behalf from my account . Whenever I am allow Program to do something on my Personal account which has a required credentials I need to give Python those credentials as well
+
+`smtplib.SMTP('')` is basically configure which email provider I want to use this work for everything 
+
+ - In order to use STMP of Gmail I need to provide this value and Port : `smtplib.SMTP('smtp.gmail.com', 587)`. This will configure that I want to use an Gmail
+
+ - `with smtplib.SMTP('smtp.gmail.com', 587) as smtp` This syntax wrap whatever come in annotation it belong to `with smtplib.SMTP('smtp.gmail.com', 587) as smtp`
+
+ - Assining this `smtplib.SMTP('smtp.gmail.com', 587)` to a variable `smtp`
+
+**with Statement**: What it does is  whenever we are using resource which is not in our control, so external resources maybe file that we are opening this basically a clean syntax for handling whatever issue may arrive with this external application . If we cannot connect our email, we can not login to it, If there is some problem with the SMTP Provider this will clean up all the resources for us in the background 
+
+<img width="600" alt="Screenshot 2025-04-29 at 13 46 35" src="https://github.com/user-attachments/assets/baf4714e-f617-4e74-b413-2123743fe8bd" />
 
 
+`smtp.starttls()`: When we working with a external application, generally security is a big issue so we need to be careful about secure . So starttls will basically encrypt the communication from python to our email server 
 
+`smtp.ehlo()`: This identify our Python application with the mail Server and it encrypted communication or connection 
+
+`smtp.login()`: Need username and password . Gmail allow two-factor authentication, more advance or more secure way to login to my account If I do not have a 2 ways authentication on Gmail
 
 
 
