@@ -27,9 +27,13 @@ def volume_backup():
     print(new_snapshot)
 
 
-# Scheduler everydays at 1pm
-schedule.every().day.at("13:00").do(volume_backup)
+# # Scheduler everydays at 1pm
+# schedule.every().day.at("13:00").do(volume_backup)
 
-# To run the Scheduler I have to execute that 
-while True:
-  schedule.run_pending()
+
+
+# # To run the Scheduler I have to execute that 
+# while True:
+#   schedule.run_pending()
+
+volume_backup()
