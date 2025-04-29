@@ -28,6 +28,10 @@
 
 - [Hanlding Error](#Hanlding-Error)
 
+- [Website Mornitoring](#Website-Mornitoring)
+
+    - [Create Server and run Nginx container](#Create-Server-and-run-Nginx-container) 
+
 # Python-Devops
 
 ## Automation 
@@ -1281,4 +1285,43 @@ def volume_backup():
       print('Creating Snapshot went wrong')
 
 ```
+
+## Website Mornitoring
+
+#### Preparation Steps 
+
+I will use Linode as a Cloud Server 
+
+Once Server installed, I will create Docker and I will rung simple Nginx container on it 
+
+Once I have Nginx Container up and running . I will write python program that checks the application  endpoint and check status of that applications
+
+Bassically It just make an HTTP request to it and checks that we have a successful reply from the application and if the response from the application is not successful, either application has some problems or application isn't accessible at all, maybe server is down, maybe the container just crashed . If that happen my Python program will basically alert us or notify through email that website is down and we need to do something with it 
+
+That mean I will configure Python program to send email to my email address 
+
+As a next step, I will automate fixing the problem as well .
+
+Once we get notified per email, we will then extend the Python Logic to restart the Docker container on the server or if the server is not accessible restart the server and then Docker container on it 
+
+#### Create Server and run Nginx container 
+
+Go to Linode -> Create Virtual Machine Linode -> Choose distribution Debian 11 -> Region -> 2 GB server -> rootpassword -> Create SSH key -> Create Server 
+
+SSH to a Server : `ssh root@<ip-address>`
+
+To install Docker, depend on the instruction that we are on we can follow the instruction in Docker Document 
+
+To install Docker for Debian : 
+
+
+
+
+
+
+
+
+
+
+
 
