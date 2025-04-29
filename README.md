@@ -26,6 +26,8 @@
 
 - [Boto3 Documents](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html)
 
+- [Hanlding Error](#Hanlding-Error)
+
 # Python-Devops
 
 ## Automation 
@@ -1248,10 +1250,35 @@ Avoid reusing existing device names (/dev/xvda, /dev/xvdb, etc.).
 
 Ensure IAM permissions include ec2:Describe*, ec2:CreateVolume, and ec2:AttachVolume.
 
+## Hanlding Error
 
+When doing automated tasks things can go wrong . Maybe Snapshot creation didn't work or Volume attachment didn't work etc .... At any of the codes something could go wrong 
 
+It is very important to write a code which is able not just execute request and function, but also handle erros when they occur, this is so important when I execute some critical operation . If `Error` not handle in the correct ways it could lead to data loss or server downtime etc.. . Insteade I catch the Error correctly and handle them, as well as print them out so we know what exactly happended during the program execution that can help me with debugging 
 
+Critical to think is if I am creating components or even more importantly, changing or updating existing resource and things go wrong there, it half work then I might end up with a weird state, we might actually break thing if I don't handle these erro properly 
 
+For example :  If creation Snapshot goes wrong so it kinda work but not really or basically I end up with a bad Snapshot like not usable Snapshot, then handling of that error should be to delete that snapshot instead of just keep it in the list, bcs then there is a risk that we might restore volume from that bad snapshot .
 
+Another Example : If we are updating something in the server, and just some of the tasks work, but some of the task works but some of them fail we should actually be able to handle that error, and kind of `roll back` the change that we did 
 
+When I am working with Terraform, it will take care of this kind of stuff, bcs it has the state managment in place, so it can handle this kind of situations . In Python however I have to do everything myself 
+
+To do that I will use `try-except` . I can catch the error when they occur and then do something when it happen 
+
+```
+def volume_backup():
+  for volume in volumes:
+    volume_id = (volume['VolumeId'])
+    try:
+      new_snapshot = ec2_client.create_snapshot(
+        VolumeId=volume_id
+      )
+
+      print(new_snapshot)
+    except:
+      # handle error 
+      print('Creating Snapshot went wrong')
+
+```
 
