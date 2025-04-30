@@ -16,15 +16,17 @@ volumes = ec2_client.describe_volumes(
 
 
 def volume_backup():
-
   for volume in volumes:
     volume_id = (volume['VolumeId'])
+    try:
+      new_snapshot = ec2_client.create_snapshot(
+        VolumeId=volume_id
+      )
 
-    new_snapshot = ec2_client.create_snapshot(
-      VolumeId=volume_id
-    )
-
-    print(new_snapshot)
+      print(new_snapshot)
+    except:
+      # handle error 
+      print('Creating Snapshot went wrong')
 
 
 # # Scheduler everydays at 1pm
