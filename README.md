@@ -37,6 +37,8 @@
     - [Email Notification](#Email-Notification)
  
     - [Hanlde Connection Error](#Hanlde-Connection-Error)
+ 
+    - [Restart The Application](#Restart-The-Application)
 
 # Python-Devops
 
@@ -1568,8 +1570,33 @@ except Exception as ex:
   send_notifications(msg)
 ```
 
+#### Restart The Application
 
+Next step I also want to repair also using Python 
 
+When the application returning non-successful status code, just restarting the application may help bcs maybe something just got messed up in the application, so we just need to start it new, maybe that will fix the issue   
+
+To restart Application I need to connect to a Server using SSH from my Python Program and then execute basically just Docker start command from there  
+
+Gerenally this logic for connecting to a remote server using SSH can be very helpful knowledge to have when I am writing Python applications, bcs it could be that in many case I need to do some maintainence task or maybe some automation task on server directly, so knowing how to connect to the remote server and execute command there will very valuable 
+
+To do that I use library call `paramiko` that allow me to `ssh` connection . 
+
+ - `ssh = paramiko.SSHClient()` give me ssh client
+
+ - ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy()) : Automatically allow connection without have to type Yes manually
+
+ - `ssh.connect(<ip-address-of-remote-server>, <ssh-port>, <username>, <private_key_location>)` I need couple parameters to connect. The code should look like this `ssh.connect(hostname='164.92.126.100', username='root', key_filename='/Users/trinhnguyen/.ssh/id_rsa')` . I don't need to provide PORT bcs it will provide by default
+
+ - `ssh.exec_command('docker ps')` to execute Linux command .
+
+     - If I want to see output of execute command `stdin, stdout, sdterr = ssh.exec_command('docker ps')`  . I actually get 3 outputs or 3 values back from the execute command that is : `stdin`, `stdout, stderr`
+  
+     - `stdin` is what I typed in the terminal
+  
+     - `stdout` is what I get from the Terrminal
+  
+     - `stderr` is when I execute command it give me error 
 
 
 
