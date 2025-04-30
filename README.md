@@ -35,6 +35,8 @@
     - [Website Request](#Website-Request)
  
     - [Email Notification](#Email-Notification)
+ 
+    - [Hanlde Connection Error](#Hanlde-Connection-Error)
 
 # Python-Devops
 
@@ -1414,12 +1416,157 @@ Not Secure if we put Username and Password direct in the code . Instead use ENV 
 
  - To get ENV : `os.environ.get('')`
 
- - To set ENV so Python can read them 
+ - To set ENV so Python can read them:
+
+     - In my Mac I can edit my `zshrc` by using `vim ~/.zshrc` then I will add `export USER_NAME=<my-username>` and `export PASSWORD_EMAIL=<my-password>` then I will restart my mac so it will actually run
+  
+     - Another way is install `pip install python-dotenv` . This one is for local development . Then I will create `.env` file and put my username and password in there
+  
+         - To use it :
+      
+           ```
+           import os
+           from dotenv import load_dotenv
+        
+           load_dotenv()  # load from .env file
+           ``` 
 
  - All Caps Variables is a standard naming rule for variables that do not change their value so they are only assigned the value once at the beginning and the program doesn't change its value these kind of variables called `constant`
 
+`smtp.sendmail(<sender>, <recevier>, <message>)` sendmail function has 3 parameters
 
+My whole code look like this :
 
+```
+import requests
+import smtplib
+import os
+
+# Access the application 
+# This will give me an response
+
+# "nguyenmanhtrinh17041998@gmail.com", "difizfotkyhbqiny"
+
+EMAIL_USERNAME = os.environ.get('EMAIL_USERNAME')
+EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
+
+try:
+  response = requests.get('http://50-116-2-196.ip.linodeusercontent.com:8080/')
+
+  # I want to check if the Application accessible and it actually giving back status code 200 
+
+  if response.status_code == 200:
+    print("Application is up and running successfully")
+  else: 
+    print("Application downs. Fix it")
+    
+    # Send email to me 
+    with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
+      smtp.starttls()
+      smtp.ehlo()
+      smtp.login(EMAIL_USERNAME, EMAIL_PASSWORD)
+      msg = f"Subject: SITE DOWN\n Application return {response.status_code}. Fix the issue! Restart the Application"
+      smtp.sendmail(EMAIL_USERNAME, EMAIL_USERNAME, msg)
+```
+
+#### Hanlde Connection Error 
+
+Above I just checking the response code . What if the server doesn't return reponse . 
+
+If this `response = requests.get('http://50-116-2-196.ip.linodeusercontent.com:8080/')` doesn't response I would need an email as well . 
+
+I will use `try except` to handle this situation  
+
+`try-except`should be use to handle exception or any error might happen that we cannot handle with If else . 
+
+For example : If I stop the nginx container then run python I will get an connection error . But also none of the code after execute 
+
+The whole code will look like this 
+
+```
+import requests
+import smtplib
+import os
+
+# Access the application 
+# This will give me an response
+
+# "nguyenmanhtrinh17041998@gmail.com", "difizfotkyhbqiny"
+
+EMAIL_USERNAME = os.environ.get('EMAIL_USERNAME')
+EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
+
+try:
+  response = requests.get('http://50-116-2-196.ip.linodeusercontent.com:8080/')
+
+  # I want to check if the Application accessible and it actually giving back status code 200 
+
+  if response.status_code == 200:
+    print("Application is up and running successfully")
+  else: 
+    print("Application downs. Fix it")
+    
+    # Send email to me 
+    with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
+      smtp.starttls()
+      smtp.ehlo()
+      smtp.login(EMAIL_USERNAME, EMAIL_PASSWORD)
+      msg = f"Subject: SITE DOWN\n Application return {response.status_code}. Fix the issue! Restart the Application"
+      smtp.sendmail(EMAIL_USERNAME, EMAIL_USERNAME, msg)
+except Exception as ex:
+  print('Connection error happen')
+  print (ex)
+  # Send email to me 
+  with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
+    smtp.starttls()
+    smtp.ehlo()
+    smtp.login(EMAIL_USERNAME, EMAIL_PASSWORD)
+    msg = f"Subject: SITE DOWN\n Application not accessible at all !!!"
+    smtp.sendmail(EMAIL_USERNAME, EMAIL_USERNAME, msg)
+```
+
+Instead of repeating the code in multiple places . It will put the logic in the function then I can call it multiple time 
+
+```
+import requests
+import smtplib
+import os
+
+# Access the application 
+# This will give me an response
+
+# "nguyenmanhtrinh17041998@gmail.com", "difizfotkyhbqiny"
+
+EMAIL_USERNAME = os.environ.get('EMAIL_USERNAME')
+EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
+
+def send_notifications(msg):
+  with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
+      smtp.starttls()
+      smtp.ehlo()
+      smtp.login(EMAIL_USERNAME, EMAIL_PASSWORD)
+      smtp.sendmail(EMAIL_USERNAME, EMAIL_USERNAME, msg)
+
+try:
+  response = requests.get('http://50-116-2-196.ip.linodeusercontent.com:8080/')
+
+  # I want to check if the Application accessible and it actually giving back status code 200 
+
+  if response.status_code == 200:
+    print("Application is up and running successfully")
+  else: 
+    print("Application downs. Fix it")
+    
+    # Send email to me 
+    msg = f"Subject: SITE DOWN\n Application return {response.status_code}. Fix the issue! Restart the Application"
+    send_notifications(msg)
+except Exception as ex:
+  print('Connection error happen')
+  print (ex)
+  # Send email to me 
+  msg = f"Subject: SITE DOWN\n Application not accessible at all !!!"
+  send_notifications(msg)
+```
 
 
 
