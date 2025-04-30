@@ -1396,7 +1396,29 @@ What I needs to send an email is a `sender` and `receiver` . Python program is b
 
 `smtp.ehlo()`: This identify our Python application with the mail Server and it encrypted communication or connection 
 
-`smtp.login()`: Need username and password . Gmail allow two-factor authentication, more advance or more secure way to login to my account If I do not have a 2 ways authentication on Gmail
+`smtp.login()`: Need username and password . Gmail allow two-factor authentication, more advance or more secure way to login to my account If I do not have a 2 ways authentication on Gmail I have to provide Gmail Password . However in that case I have to allow my Gmail account to accept call from application (Should use Gmail allow two-factor authentication)
+
+ - Turn on 2-Step Verification for your Google account: (https://myaccount.google.com/security)
+
+ - Go to: (https://myaccount.google.com/apppasswords)
+
+ - Select "Mail" and the device you're using (e.g., Windows).
+
+ - Google will give you a 16-digit App Password. Something like this `abdf fbft qwer qiny`
+
+ - Use this in your script like: `smtp.login("your_email@gmail.com", "your_app_password")`
+
+Not Secure if we put Username and Password direct in the code . Instead use ENV . 
+
+ - To access  ENV in Python use built-in module called : `os`
+
+ - To get ENV : `os.environ.get('')`
+
+ - To set ENV so Python can read them 
+
+ - All Caps Variables is a standard naming rule for variables that do not change their value so they are only assigned the value once at the beginning and the program doesn't change its value these kind of variables called `constant`
+
+
 
 
 
