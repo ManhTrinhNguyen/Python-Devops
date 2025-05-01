@@ -39,6 +39,8 @@
     - [Hanlde Connection Error](#Hanlde-Connection-Error)
  
     - [Restart The Application](#Restart-The-Application)
+ 
+    - [Schedule Monitor Task](#Schedule-Monitor-Task)
 
 # Python-Devops
 
@@ -1596,7 +1598,136 @@ To do that I use library call `paramiko` that allow me to `ssh` connection .
   
      - `stdout` is what I get from the Terrminal
   
-     - `stderr` is when I execute command it give me error 
+     - `stderr` is when I execute command it give me error
+  
+ - When I don't have any other command to execute I need to close th ssh connection : `ssh.close()`
+
+ - To restart Application : `stdin, stdout, stderr = ssh.exec_command("docker start <container-id>")`
+
+I also want to restart a Server bcs the Server itself might also be a problem 
+
+ - First I need Python Linode Client to connect to Linode account then reboot Linode Server . Install `pip install linode-api4`
+
+ - Any external Application I want to connect I alway need some kind of Authentication . So I need a API Token to connect to Linode .
+
+ - API Token are token that I can create myself to give program like Python access to my Linode account
+
+ - Once I have the Token I will set it as a ENV then I will get a token like this : `LINODE_TOKEN = os.environ.get('LINODE_TOKEN')` . Then I can use that Token to connect to Linode like this :`client = linode_api4.LinodeClient(LINODE_TOKEN)`
+
+ - `nginx_server = client.load(linode_api4.Instance, <linode-id>)` can be use to Connect to Linode server .
+
+     - `linode_api4.Instance` connect to Linode Instance
+  
+     - `<linode-id>`: Connect to specific Linode
+  
+ - To reboot server : `nginx_server.reboot()`
+
+ - Reboot will take sometime to reboot . So I want to wait before restart the Application . The logic is I will write a while loop until the status become `running` I will break a loop and restart the Application
+
+
+#### Schedule Monitor Task 
+
+```
+import requests
+import smtplib
+import os
+import paramiko
+import linode_api4
+import time
+import schedule
+
+# Access the application 
+# This will give me an response
+
+EMAIL_USERNAME = os.environ.get('EMAIL_USERNAME')
+EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
+LINODE_TOKEN = os.environ.get('LINODE_TOKEN')
+
+def send_notifications(msg):
+  with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
+      smtp.starttls()
+      smtp.ehlo()
+      smtp.login(EMAIL_USERNAME, EMAIL_PASSWORD)
+      smtp.sendmail(EMAIL_USERNAME, EMAIL_USERNAME, msg)
+
+
+def monitor_application():
+  try:
+    response = requests.get('http://50-116-12-203.ip.linodeusercontent.com:8080/')
+
+    # I want to check if the Application accessible and it actually giving back status code 200 
+
+    if response.status_code == 200:
+      print("Application is up and running successfully")
+    else: 
+      print("Application downs. Fix it")
+      
+      # Send email to me 
+      msg = f"Subject: SITE DOWN\n Application return {response.status_code}. Fix the issue! Restart the Application"
+      send_notifications(msg)
+
+      # Restart Application
+      ssh = paramiko.SSHClient()
+      ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+      # Load private key
+      private_key = paramiko.RSAKey.from_private_key_file('/Users/trinhnguyen/.ssh/id_rsa')       
+
+      # connect
+      ssh.connect(hostname="50.116.12.203", username="root", pkey=private_key)
+
+      # Execute a command
+      stdin, stdout, stderr = ssh.exec_command("docker ps")
+      print(stdout.readlines())
+      ssh.close()
+      print('Application restart')
+
+  except Exception as ex:
+    print('Connection error happen')
+    print (ex)
+    # Send email to me 
+    msg = f"Subject: SITE DOWN\n Application not accessible at all !!!"
+    send_notifications(msg)
+
+    # Start Linode Server
+    client = linode_api4.LinodeClient(LINODE_TOKEN)
+    nginx_server = client.load(linode_api4.Instance, 421847)
+    nginx_server.reboot()
+
+    # Wait for the Server reboot
+
+    while True:
+      nginx_server = client.load(linode_api4.Instance, 421847)
+      if nginx_server.status == 'running':
+        time.sleep(5)
+        # Restart Application
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+        # Load private key
+        private_key = paramiko.RSAKey.from_private_key_file('/Users/trinhnguyen/.ssh/id_rsa')       
+
+        # connect
+        ssh.connect(hostname="50.116.12.203", username="root", pkey=private_key)
+
+        # Execute a command
+        stdin, stdout, stderr = ssh.exec_command("docker ps")
+        print(stdout.readlines())
+        ssh.close()
+        print('Application restart')
+
+        break
+
+schedule.every(5).minutes.do(monitor_application)
+
+while True:
+  schedule.run_pending()
+```
+
+
+
+
+
 
 
 
